@@ -9,7 +9,7 @@ export const cookieToken = (user: User) => {
     httpOnly: true,
   };
 
-  cookies().set("token", token, options);
+  cookies().set("auth-token", token, options);
 
   return token;
 };
