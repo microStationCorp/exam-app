@@ -1,4 +1,5 @@
-import { Prisma } from "@prisma/client";
+'use server'
+
 import * as jose from "jose";
 import { cookies } from "next/headers";
 import { prisma } from "./prisma";
@@ -24,7 +25,6 @@ export const getSession = async () => {
   if (!isVerified) {
     return null;
   } else {
-    
     const user = await prisma.user.findUnique({
       where: {
         id: payload!.payload.userId as string,

@@ -1,11 +1,22 @@
 "use client";
 
+import { getSession } from "@/utils/verifyToken";
 import axios from "axios";
-import { useRouter } from "next/navigation";
-import React from "react";
+import { useRouter, redirect } from "next/navigation";
+import React, { useEffect, useState } from "react";
 
 function Dashboard() {
+  const [session, setSession] = useState<any>();
   const router = useRouter();
+
+  useEffect(() => {
+    const takeSession = async () => {
+      setSession(await getSession());
+    };
+
+    takeSession();
+  }, []);
+
   const logout = async () => {
     axios
       .get("/api/users/logout")
@@ -24,6 +35,7 @@ function Dashboard() {
           logout
         </button>
       </div>
+      <div>{JSON.stringify(session)}</div>
     </div>
   );
 }
