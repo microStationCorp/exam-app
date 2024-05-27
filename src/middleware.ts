@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { verifyToken } from "./utils/verifyToken";
 
-const forAuthorised = ["/profile"];
+const forAuthorised = ["/profile", "/logout"];
 const forUnauthorised = ["/login", "/signup"];
 
 // This function can be marked `async` if using `await` inside
@@ -26,5 +26,5 @@ export async function middleware(request: NextRequest) {
 
 // See "Matching Paths" below to learn more
 export const config = {
-  matcher: ["/profile", "/login", "/signup"],
+  matcher: ["/profile", "/login", "/signup", "/logout"],
 };

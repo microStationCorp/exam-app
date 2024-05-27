@@ -1,5 +1,3 @@
-import { getSession } from "@/utils/verifyToken";
-
 export default async function Login() {
   return (
     <div>

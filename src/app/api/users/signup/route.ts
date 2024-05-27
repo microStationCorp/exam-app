@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import bcryptjs from "bcryptjs";
 import { prisma } from "@/utils/prisma";
-import jwt from "jsonwebtoken";
 import { cookieToken } from "@/utils/cookieToken";
 
 export async function POST(req: NextRequest) {
