@@ -12,12 +12,14 @@ export async function middleware(request: NextRequest) {
 
   const authToken = cookies().get("auth-token")?.value;
   const pathname = request.nextUrl.pathname;
-  const isVerified = await verifyToken(authToken!);
+  const { isVerified, payload } = await verifyToken(authToken!);
 
   if (!isVerified && forAuthorised.indexOf(pathname) > -1) {
     url.pathname = "/login";
     return NextResponse.redirect(url);
   }
+
+  console.log(payload);
 
   return NextResponse.next();
 }
