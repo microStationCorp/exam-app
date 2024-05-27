@@ -1,9 +1,9 @@
-import { cookieToken } from "@/utils/cookieToken";
 import { prisma } from "@/utils/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
+import { getJwtToken } from "@/utils/getJwtTokens";
 
-export async function POST(req: NextRequest) {
+export async function POST(req: NextRequest, res: NextResponse) {
   const { email, password } = await req.json();
   if (!email || !password) {
     return NextResponse.json(
@@ -11,6 +11,7 @@ export async function POST(req: NextRequest) {
       { status: 401 }
     );
   }
+
   try {
     const user = await prisma.user.findUnique({
       where: {
@@ -33,8 +34,13 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const token = cookieToken(user);
-    return NextResponse.json(
+    const token = await getJwtToken(user.id);
+    const options = {
+      expires: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
+      httpOnly: true,
+    };
+
+    const response = NextResponse.json(
       {
         data: {
           success: true,
@@ -46,6 +52,8 @@ export async function POST(req: NextRequest) {
       },
       { status: 200 }
     );
+    response.cookies.set("auth-token", token, options);
+    return response;
   } catch (err) {
     return NextResponse.json({ error: "server error" }, { status: 500 });
   }

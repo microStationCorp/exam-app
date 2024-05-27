@@ -1,35 +1,38 @@
 "use client";
 
 import axios from "axios";
-import { useState } from "react";
 import { useRouter } from "next/navigation";
+import React, { useState } from "react";
 
-export default function Login() {
+function Signup() {
+  const router = useRouter();
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const router = useRouter();
 
-  const loginAction = async () => {
-    console.log({ email, password });
+  const signupAction = async () => {
+    console.log({ name, email, password });
     axios
-      .post(
-        "/api/users/login",
-        { email, password },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      )
+      .post("/api/users/signup", { name, email, password })
       .then((res) => {
         console.log(res);
-        router.push("/dashboard");
+        router.push("/login");
       })
       .catch((err) => console.log(err));
   };
+
   return (
-    <div>
-      <span>login page</span>
+    <div className="flex">
+      <div>Signup</div>
+      <input
+        type="text"
+        name="name"
+        id="name"
+        value={name}
+        className="border-2 border-black bg-slate-200 focus:bg-slate-100"
+        placeholder="name"
+        onChange={(e) => setName(e.target.value)}
+      />
       <input
         placeholder="email"
         type="text"
@@ -49,12 +52,14 @@ export default function Login() {
         className="border-2 border-black bg-slate-200 focus:bg-slate-100"
       />
       <button
-        onClick={loginAction}
+        onClick={signupAction}
         type="button"
         className="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
       >
-        login
+        sign up
       </button>
     </div>
   );
 }
+
+export default Signup;

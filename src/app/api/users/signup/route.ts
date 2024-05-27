@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import bcryptjs from "bcryptjs";
 import { prisma } from "@/utils/prisma";
-import { cookieToken } from "@/utils/cookieToken";
+import { getJwtToken } from "@/utils/getJwtTokens";
 
 export async function POST(req: NextRequest) {
   try {
@@ -35,21 +35,26 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    const token = cookieToken(user);
+    const token = await getJwtToken(user.id);
+    const options = {
+      expires: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
+      httpOnly: true,
+    };
 
-    return NextResponse.json(
+    const response = NextResponse.json(
       {
         data: {
           success: true,
-          token,
           user: {
             name: user.name,
             email: user.email,
           },
         },
       },
-      { status: 201 }
+      { status: 200 }
     );
+    response.cookies.set("auth-token", token, options);
+    return response;
   } catch (error) {
     console.log("catch error log");
     return NextResponse.json({ error: error }, { status: 500 });

@@ -3,28 +3,35 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { verifyToken } from "./utils/verifyToken";
 
-const forAuthorised = ["/profile", "/logout"];
+const forAuthorised = ["/dashboard", "/logout"];
 const forUnauthorised = ["/login", "/signup"];
 
 // This function can be marked `async` if using `await` inside
-export async function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest, res: NextResponse) {
   const url = request.nextUrl.clone();
 
   const authToken = cookies().get("auth-token")?.value;
   const pathname = request.nextUrl.pathname;
   const { isVerified, payload } = await verifyToken(authToken!);
 
-  if (!isVerified && forAuthorised.indexOf(pathname) > -1) {
+  if (!isVerified && isPresent(forAuthorised, pathname)) {
     url.pathname = "/login";
     return NextResponse.redirect(url);
   }
 
-  console.log(payload);
+  if (isVerified && isPresent(forUnauthorised, pathname)) {
+    url.pathname = "/dashboard";
+    return NextResponse.redirect(url);
+  }
 
   return NextResponse.next();
 }
 
+function isPresent(sampleArray: string[], pathname: string) {
+  return sampleArray.some((value) => pathname.startsWith(value));
+}
+
 // See "Matching Paths" below to learn more
 export const config = {
-  matcher: ["/profile", "/login", "/signup", "/logout"],
+  matcher: ["/dashboard/:path*", "/login", "/signup", "/logout"],
 };
