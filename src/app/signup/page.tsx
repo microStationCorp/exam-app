@@ -24,7 +24,7 @@ function Signup() {
 
   return (
     <div
-      className="absolute border-2 m-auto top-0 bottom-0 left-0 right-0 w-72
+      className="absolute border-2 m-auto top-0 bottom-0 left-0 right-0 w-80
     h-64 flex flex-col justify-evenly items-center"
     >
       <span className="capitalize">Sign up</span>
