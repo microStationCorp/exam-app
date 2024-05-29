@@ -2,8 +2,9 @@ import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { verifyToken } from "./utils/verifyToken";
+import { Role } from "@prisma/client";
 
-const forAuthorised = ["/dashboard", "/logout"];
+const forAuthorised = ["/dashboard", "/logout", "/profile"];
 const forUnauthorised = ["/login", "/signup"];
 
 // This function can be marked `async` if using `await` inside
@@ -13,6 +14,15 @@ export async function middleware(request: NextRequest, res: NextResponse) {
   const authToken = cookies().get("auth-token")?.value;
   const pathname = request.nextUrl.pathname;
   const { isVerified, payload } = await verifyToken(authToken!);
+
+  if (
+    isVerified &&
+    payload?.payload.role == Role.STUDENT &&
+    pathname.startsWith("/dashboard")
+  ) {
+    url.pathname = "/profile";
+    return NextResponse.redirect(url);
+  }
 
   if (!isVerified && isPresent(forAuthorised, pathname)) {
     url.pathname = "/login";
@@ -33,5 +43,5 @@ function isPresent(sampleArray: string[], pathname: string) {
 
 // See "Matching Paths" below to learn more
 export const config = {
-  matcher: ["/dashboard/:path*", "/login", "/signup", "/logout"],
+  matcher: ["/dashboard/:path*", "/login", "/signup", "/logout", "/profile"],
 };

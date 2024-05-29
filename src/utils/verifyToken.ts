@@ -1,4 +1,4 @@
-'use server'
+"use server";
 
 import * as jose from "jose";
 import { cookies } from "next/headers";
@@ -35,6 +35,7 @@ export const getSession = async () => {
       id: user?.id,
       email: user?.email,
       name: user?.name,
+      role: user?.role,
     };
   }
 };

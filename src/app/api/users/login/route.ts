@@ -34,7 +34,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
       );
     }
 
-    const token = await getJwtToken(user.id);
+    const token = await getJwtToken(user);
     const options = {
       expires: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
       httpOnly: true,
