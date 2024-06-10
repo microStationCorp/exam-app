@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { AuthContextProvider } from "@/context/authContext";
+import { Toaster } from "@/components/ui/toaster";
+import { ClerkProvider } from "@clerk/nextjs";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -15,7 +16,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <AuthContextProvider>{children}</AuthContextProvider>
+        <ClerkProvider>
+          {children}
+          <Toaster />
+        </ClerkProvider>
       </body>
     </html>
   );

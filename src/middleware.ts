@@ -1,47 +1,13 @@
-import { cookies } from "next/headers";
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
-import { verifyToken } from "./utils/verifyToken";
-import { Role } from "@prisma/client";
+import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 
-const forAuthorised = ["/dashboard", "/logout", "/profile"];
-const forUnauthorised = ["/login", "/signup"];
+const isPublicRoute = createRouteMatcher(["/sign-in(.*)", "/sign-up(.*)", "/"]);
 
-// This function can be marked `async` if using `await` inside
-export async function middleware(request: NextRequest, res: NextResponse) {
-  const url = request.nextUrl.clone();
-
-  const authToken = cookies().get("auth-token")?.value;
-  const pathname = request.nextUrl.pathname;
-  const { isVerified, payload } = await verifyToken(authToken!);
-
-  if (
-    isVerified &&
-    payload?.payload.role == Role.STUDENT &&
-    pathname.startsWith("/dashboard")
-  ) {
-    url.pathname = "/profile";
-    return NextResponse.redirect(url);
+export default clerkMiddleware((auth, request) => {
+  if (!isPublicRoute(request)) {
+    auth().protect();
   }
+});
 
-  if (!isVerified && isPresent(forAuthorised, pathname)) {
-    url.pathname = "/login";
-    return NextResponse.redirect(url);
-  }
-
-  if (isVerified && isPresent(forUnauthorised, pathname)) {
-    url.pathname = "/dashboard";
-    return NextResponse.redirect(url);
-  }
-
-  return NextResponse.next();
-}
-
-function isPresent(sampleArray: string[], pathname: string) {
-  return sampleArray.some((value) => pathname.startsWith(value));
-}
-
-// See "Matching Paths" below to learn more
 export const config = {
-  matcher: ["/dashboard/:path*", "/login", "/signup", "/logout", "/profile"],
+  matcher: ["/((?!.*\\..*|_next).*)", "/", "/(api|trpc)(.*)"],
 };

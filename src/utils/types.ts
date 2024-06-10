@@ -25,3 +25,12 @@ export type ContextT = {
     password: string
   ) => Promise<AuthActionResponseT> | null;
 };
+
+export type LoginInputFormT = {
+  email: string;
+  password: string;
+};
+
+export type RegisterInputFormT = {
+  username: string;
+} & LoginInputFormT;
